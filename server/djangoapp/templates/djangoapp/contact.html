@@ -14,19 +14,14 @@
 
 </head>
 <body>
-    <header>
-        {% include "djangoapp/sub_header.html" %}
-    </header>
-
-    <!-- body content -->
-    <h1>Contact Us</h1>
-    <hr>
-    <p>
-        Call us at <b>1-800-BEST-CARS</b>!
-    </p>
-
-    <footer>
-        {% include 'djangoapp/sub_footer.html' %}
-    </footer>
+{% include "djangoapp/sub_header.html" %}
+    <div class="container">
+        <h1>Contact Us</h1>
+        <hr>
+        <p>
+            Call us at <b>1-800-BEST-CARS</b>!
+        </p>
+    </div>
+{% include 'djangoapp/sub_footer.html' %}
 </body>
 </html>
