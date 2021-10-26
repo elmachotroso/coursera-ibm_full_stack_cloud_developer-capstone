@@ -52,7 +52,7 @@ def registration_request(request):
             lastname = request.POST['lastname']
             users = User.objects.filter(username=username)
             if users.count() == 0:
-                user = User.objects.create_user(username=username, password=password, first_name=firstname, last_name=lastname)
+                user = User.objects.create_user(username=username, password=password, email=email, first_name=firstname, last_name=lastname)
                 login(request, user)
                 return redirect('djangoapp:index')
             else:
