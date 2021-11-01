@@ -12,7 +12,6 @@ async function main( params )
     try
     {
         let mydb = await cloudant.db.use("dealerships");
-        let dbParams = { include_docs : true };
         let fields = [
             "_id",
             "_rev",
@@ -28,27 +27,42 @@ async function main( params )
             "zip"
             ];
         let state = params.state;
+        let docList = null;
         if( state != undefined && state != null )
         {
             state = state.toUpperCase();
-            let docList = await mydb.find({
-                "selector" : {
-                    "st" : state
+            docList = await mydb.find({
+                selector : {
+                    st : state
                 },
-                "fields" : fields
+                fields : fields
             })
-            return { "body" : docList.docs };
+        }
+        else
+        {
+            docList = await mydb.find({
+                selector : {},
+                fields : fields
+            });
         }
         
-        let docList = await mydb.find({
-            "selector" : {
-            },
-            "fields" : fields
-        })
-        return { "body" : docList.docs };
+        if( docList.docs.length > 0 )
+        {
+            return { body : docList.docs };
+        }
+        else
+        {
+            return {
+                code : 400,
+                error : "empty result"
+            };
+        }
     }
     catch( error )
     {
-        return { error: error.description };
+        return {
+            code : 500,
+            error : error.description
+        };
     }
 }
