@@ -28,8 +28,10 @@ async function main( params )
             ];
         let state = params.state;
         let docList = null;
+        let errorMsg = "";
         if( state != undefined && state != null )
         {
+            errorMsg = "The state does not exist."
             state = state.toUpperCase();
             docList = await mydb.find({
                 selector : {
@@ -40,6 +42,7 @@ async function main( params )
         }
         else
         {
+            errorMsg = "The database is empty."
             docList = await mydb.find({
                 selector : {},
                 fields : fields
@@ -53,8 +56,8 @@ async function main( params )
         else
         {
             return {
-                code : 400,
-                error : "empty result"
+                code : 404,
+                error : errorMsg
             };
         }
     }
