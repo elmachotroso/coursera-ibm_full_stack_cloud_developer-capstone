@@ -12,13 +12,40 @@ async function main( params )
     try
     {
         let mydb = await cloudant.db.use("dealerships");
-        let docList = await mydb.list();
-        let ids = [];
-        docList.rows.forEach( (doc) => {
-            ids.push( doc['id'] );
-        })
+        let dbParams = { include_docs : true };
+        let fields = [
+            "_id",
+            "_rev",
+            "address",
+            "city",
+            "full_name",
+            "id",
+            "lat",
+            "long",
+            "short_name",
+            "st",
+            "state",
+            "zip"
+            ];
+        let state = params.state;
+        if( state != undefined && state != null )
+        {
+            state = state.toUpperCase();
+            let docList = await mydb.find({
+                "selector" : {
+                    "st" : state
+                },
+                "fields" : fields
+            })
+            return { "body" : docList.docs };
+        }
         
-        return { "docs" : rows };
+        let docList = await mydb.find({
+            "selector" : {
+            },
+            "fields" : fields
+        })
+        return { "body" : docList.docs };
     }
     catch( error )
     {
