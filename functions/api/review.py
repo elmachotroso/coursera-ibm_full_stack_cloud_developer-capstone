@@ -10,7 +10,15 @@
 from cloudant.client import Cloudant
 from cloudant.error import CloudantException
 import requests
+import json
 
+def http_error(status_code, message):
+    return {
+        "headers" : { "Content-Type" : "application/json" },
+        "statusCode" : status_code,
+        "code": status_code,
+        "error": message
+        }
 
 def main(dict):
     COUCH_USERNAME = "0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix"
@@ -22,20 +30,37 @@ def main(dict):
             account_name=COUCH_USERNAME,
             api_key=IAM_API_KEY,
             connect=True,
-        )
-        print("Databases: {0}".format(client.all_dbs()))
-        db = client.useDatabase(databaseName)
+            )
+        db = client[databaseName]
     except CloudantException as ce:
         print("unable to connect")
-        return {
-            "code": 500,
-            "error": ce
-            }
+        return http_error(500, ce)
     except (requests.exceptions.RequestException, ConnectionResetError) as err:
         print("connection error")
-        return {
-            "code": 500,
-            "error": err
-            }
+        return http_error(500, err)
 
-    return {"dbs": client.all_dbs()}
+    # GET
+    if "dealerId" not in dict or dict["dealerId"] is None:
+        print("dealerId does not exist.")
+        return http_error(404, "dealerId does not exist.")
+
+    dealerId = int(dict["dealerId"])
+    docs = []
+    try:
+        resp = db.get_query_result(selector={
+            "dealership": {
+                "$eq" : dealerId
+                }
+            }
+            , fields=["id", "name", "car_make", "car_model", "car_year", "dealership", "purchase", "purchase_date", "review"]
+            # , raw_result=True
+            )
+        docs = [ doc for doc in resp ]
+    except CloudantException as ce:
+        print("query failed.")
+        return http_error(500, "query failed.")
+    
+    if len(docs) == 0:
+        return http_error(404, "dealerId does not exist.")
+
+    return { "body": docs }
