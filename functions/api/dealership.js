@@ -1,3 +1,7 @@
+//const  Cloudant  =  require('@cloudant/cloudant');
+const  COUCH_URL  =  "https://0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix.cloudantnosqldb.appdomain.cloud";
+const  IAM_API_KEY  =  "P4ML4YSIiBDR3uJoMw_7ymwT_XUSFI5Ikyd_W4fKr52-";
+
 const Cloudant = require('@cloudant/cloudant');
 const COUCH_URL = "https://0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix.cloudantnosqldb.appdomain.cloud";
 const IAM_API_KEY = "P4ML4YSIiBDR3uJoMw_7ymwT_XUSFI5Ikyd_W4fKr52-";
@@ -9,16 +13,17 @@ async function main( params )
         plugins: { iamauth: { iamApiKey: IAM_API_KEY } }
     });
     
+    let errorCode = 500;
+    let errorMsg = "Something went wrong.";
+    
     try
     {
         let mydb = await cloudant.db.use("dealerships");
         let fields = [
-            "_id",
-            "_rev",
+            "id",
             "address",
             "city",
             "full_name",
-            "id",
             "lat",
             "long",
             "short_name",
@@ -28,7 +33,6 @@ async function main( params )
             ];
         let state = params.state;
         let docList = null;
-        let errorMsg = "";
         if( state != undefined && state != null )
         {
             errorMsg = "The state does not exist."
@@ -53,19 +57,16 @@ async function main( params )
         {
             return { body : docList.docs };
         }
-        else
-        {
-            return {
-                code : 404,
-                error : errorMsg
-            };
-        }
+        errorCode = 404;
     }
     catch( error )
     {
-        return {
-            code : 500,
-            error : error.description
-        };
+        errorCode = 500;
+        errorMsg = "Something went wrong.";
     }
+    
+    retError = new Error( errorMsg );
+    retError.code = errorCode.toString();
+    retError.statusCode = errorCode;
+    throw retError;
 }
