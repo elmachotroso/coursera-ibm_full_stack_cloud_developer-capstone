@@ -40,28 +40,31 @@ def main(dict):
         return http_error(500, err)
 
     # POST
-    fields = ["id", "name", "car_make", "car_model", "car_year", "dealership", "purchase", "purchase_date"]
+    fields = ["id", "name", "car_make", "car_model", "car_year", "dealership", "purchase", "purchase_date", "review"]
     if "review" not in dict or dict["review"] is None:
         print("review does not exist.")
         return http_error(500, "something went wrong")
 
-    dealerId = int(dict["dealerId"])
-    docs = []
+    doc_entry = dict["review"]
+    # check if all fields are in the review block
+    for field in fields:
+        if field not in doc_entry:
+            print(f"expected '{field}' field does not exist")
+            return http_error(500, "something went wrong")
     try:
-        resp = db.get_query_result(selector={
-            "dealership": {
-                "$eq" : dealerId
-                }
-            }
-            , fields=fields
-            # , raw_result=True
-            )
-        docs = [ doc for doc in resp ]
+        if str(doc_entry["id"]) in db:
+            doc = db[str(doc_entry["id"])]
+            for key in doc_entry:
+                doc[key] = doc_entry[key]
+            doc.save()
+        else:
+            doc_entry["_id"] = str(doc_entry["id"])
+            doc = db.create_document(doc_entry)
+            if not doc.exists():
+                print(f"Failed to create a document given valid data {doc_entry}")
+                return http_error(500, "something went wrong")
     except CloudantException as ce:
-        print("query failed.")
-        return http_error(500, "query failed.")
+        print(f"cloudant exception: {ce}")
+        return http_error(500, "something went wrong")
     
-    if len(docs) == 0:
-        return http_error(404, "dealerId does not exist.")
-
-    return { "body": docs }
+    return { "body": str(doc["id"]) }
