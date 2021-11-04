@@ -1,10 +1,14 @@
-//const  Cloudant  =  require('@cloudant/cloudant');
-const  COUCH_URL  =  "https://0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix.cloudantnosqldb.appdomain.cloud";
-const  IAM_API_KEY  =  "P4ML4YSIiBDR3uJoMw_7ymwT_XUSFI5Ikyd_W4fKr52-";
-
 const Cloudant = require('@cloudant/cloudant');
 const COUCH_URL = "https://0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix.cloudantnosqldb.appdomain.cloud";
 const IAM_API_KEY = "P4ML4YSIiBDR3uJoMw_7ymwT_XUSFI5Ikyd_W4fKr52-";
+
+function http_error( statusCode, message )
+{
+    let error = new Error( message );
+    error.code = statusCode.toString();
+    error.statusCode = statusCode;
+    return error;
+}
 
 async function main( params )
 {
@@ -64,9 +68,6 @@ async function main( params )
         errorCode = 500;
         errorMsg = "Something went wrong.";
     }
-    
-    retError = new Error( errorMsg );
-    retError.code = errorCode.toString();
-    retError.statusCode = errorCode;
-    throw retError;
+
+    throw http_error( errorCode, errorMsg );
 }
