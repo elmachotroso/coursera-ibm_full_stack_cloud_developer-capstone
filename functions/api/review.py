@@ -7,6 +7,7 @@
 # @return The output of this action, which must be a JSON object.
 #
 #
+# ref: https://python-cloudant.readthedocs.io/en/stable/getting_started.html#checking-if-a-document-exists
 from cloudant.client import Cloudant
 from cloudant.error import CloudantException
 import requests
