@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import CarDealer, CarModel, CarMake
-from .restapis import get_dealers_from_cf, get_dealers_by_state_from_cf, get_dealer_by_id_from_cf, get_dealer_reviews_from_cf
+from .restapis import get_dealers_from_cf, get_dealers_by_state_from_cf, get_dealer_by_id_from_cf, get_dealer_reviews_from_cf, add_review_to_cf
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -73,11 +73,35 @@ def get_dealerships(request):
 def get_dealer_details(request, dealer_id):
     context = {}
     if request.method == "GET":
+        dealers = get_dealer_by_id_from_cf(dealer_id)
+        context["dealer"] = None
+        if len(dealers) > 0:
+            context["dealer"] = dealers[0]
         context["reviews"] = get_dealer_reviews_from_cf(dealer_id)
     return render(request, "djangoapp/dealer_details.html", context)
 
-# Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
+    if request.method == "POST":
+        if request.user is not None and request.user.is_authenticated:
+            print("POST something.")
+            FORM_FIELDS = ["id", "name", "car_make", "car_model", "car_year", "purchase", "purchase_date", "review"]
+            review = {
+                "dealership" : dealer_id
+                }
+            for field in FORM_FIELDS:
+                review[field] = None
+                if field in request.POST:
+                    review[field] = request.POST[field]
+            json_payload = { "review" : review }
+            result = add_review_to_cf(json_payload)
+            if result and len(result) > 0:
+                print(f"POST add_review_to_cf SUCCESS! reviewId={result['reviewId']}")
+                return redirect('djangoapp:dealer')
+    # GET part
     context = {}
+    dealers = get_dealer_by_id_from_cf(dealer_id)
+    context["dealer"] = None
+    if len(dealers) > 0:
+        context["dealer"] = dealers[0]
     return render(request, "djangoapp/add_review.html", context)
 

@@ -12,7 +12,14 @@
 </head>
 <body>
 {% include "djangoapp/sub_header.html" %}
-<div class="container">
+<div class="container p-3 my-3">
+    <h1>Review Dealer: {{ dealer.short_name }}</h1>
+    <hr>
+    {% if user and user.is_authenticated %}
+    Form for review:
+    {% else %}
+    You must log in to make a review!
+    {% endif%}
 </div>
 {% include 'djangoapp/sub_footer.html' %}
 </body>

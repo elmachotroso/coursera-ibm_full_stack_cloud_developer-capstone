@@ -26,8 +26,18 @@ def get_request(url, api_key = None, **kwargs):
     json_data = json.loads(response.text)
     return json_data
 
-# Create a `post_request` to make HTTP POST requests
-# e.g., response = requests.post(url, params=kwargs, json=payload)
+def post_request(url, json_payload, **kwargs):
+    print(kwargs)
+    try:
+        print("POST from {} ".format(url))    
+        response = requests.post(url, headers={'Content-Type': 'application/json'}, params=kwargs, json=json_payload)
+    except:
+        # If any error occurs 
+        print("Network exception occurred")
+    status_code = response.status_code
+    print("With status {} ".format(status_code))
+    json_data = json.loads(response.text)
+    return json_data
 
 def _get_dealers_from_cf_by_url(url):
     results = []
@@ -105,5 +115,15 @@ def analyze_review_sentiments(text):
     print(f"Final sentiment: {sentiment}")
     return sentiment
 
-
+def add_review_to_cf(json_payload):
+    results = []
+    url = "https://9cecc68d.us-south.apigw.appdomain.cloud/api/review"
+    json_result = post_request(url, json_payload=json_payload)
+    if json_result:
+        reviewId = json_result["body"]
+        print(f"reviewId={reviewId}")
+        results.append({
+            "reviewId" : int(reviewId)
+            })
+    return results
 

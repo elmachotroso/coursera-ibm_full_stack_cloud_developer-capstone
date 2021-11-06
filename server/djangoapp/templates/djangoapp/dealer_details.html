@@ -8,7 +8,39 @@
 </head>
 <body>
 {% include "djangoapp/sub_header.html" %}
-<div class="container"> 
+<div class="container p-3 my-3">
+    {% if dealer %}
+    <h1>Reviews for {{ dealer.full_name }}</h1>
+    <hr>
+        {% if reviews and reviews|length > 0 %}
+            {% for review in reviews %}
+            <div class="container p-3 my-3 border text-white
+                {% if review.sentiment == 'positive' %}
+                    bg-success
+                {% elif review.sentiment == 'negative' %}
+                    bg-danger
+                {% else %}
+                    bg-secondary
+                {% endif %}
+                ">{{ review.name }} ({{ review.purchase_date }})
+                <hr>{{ review.review }}
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="container justify-content-center p-3 my-3">
+            No reviews.
+        </div>
+        {% endif %}
+        {% if user and user.is_authenticated %}
+        <div class="container justify-content-center p-3 my-3">
+            <button class="btn btn-primary" type="button" onClick="javascript:location.href=' {% url 'djangoapp:add_review' dealer.id %} ';">Add Review</button>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="container justify-content-center p-3 my-3">
+        No dealer specified.
+    </div>
+    {% endif %}
 </div>
 {% include 'djangoapp/sub_footer.html' %}
 </body>
