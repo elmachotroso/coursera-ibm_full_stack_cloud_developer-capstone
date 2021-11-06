@@ -35,18 +35,31 @@ async function main( params )
             "state",
             "zip"
             ];
-        let state = params.state;
         let docList = null;
-        if( state != undefined && state != null )
+        if( params.state )
         {
-            errorMsg = "The state does not exist."
-            state = state.toUpperCase();
+            errorMsg = "The state(" + params.state + ") does not exist."
+            let state = params.state.toUpperCase();
             docList = await mydb.find({
                 selector : {
                     st : state
                 },
                 fields : fields
-            })
+            });
+        }
+        else if( params.dealer_id )
+        {
+            errorMsg = "The dealer(" + params.dealer_id + ") does not exist."
+            dealer_id = parseInt( params.dealer_id )
+            if( !isNaN( dealer_id ) )
+            {
+                docList = await mydb.find({
+                    selector : {
+                        id : dealer_id
+                    },
+                    fields : fields
+                });
+            }
         }
         else
         {
