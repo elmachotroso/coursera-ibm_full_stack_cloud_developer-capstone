@@ -17,7 +17,13 @@
 <div class="container">
     <h1>This is the landing page for Dealership Reviews</h1>
     <hr>
-    Nothing to dislay.
+    {% if dealers %}
+    <ul>
+        {% for dealer in dealers %}
+        <li><a href="{% url 'djangoapp:dealer' dealer.id %}">({{ dealer.id }}) {{ dealer.short_name }}</a></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 </div>
 {% include 'djangoapp/sub_footer.html' %}
 </body>
