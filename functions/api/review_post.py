@@ -7,7 +7,6 @@
 # @return The output of this action, which must be a JSON object.
 #
 #
-# ref: https://python-cloudant.readthedocs.io/en/stable/getting_started.html#checking-if-a-document-exists
 from cloudant.client import Cloudant
 from cloudant.error import CloudantException
 import requests
@@ -41,7 +40,7 @@ def main(dict):
         return http_error(500, err)
 
     # POST
-    fields = ["id", "name", "car_make", "car_model", "car_year", "dealership", "purchase", "purchase_date", "review"]
+    fields = ["name", "car_make", "car_model", "car_year", "dealership", "purchase", "purchase_date", "review"]
     if "review" not in dict or dict["review"] is None:
         print("review does not exist.")
         return http_error(500, "something went wrong")
@@ -53,19 +52,13 @@ def main(dict):
             print(f"expected '{field}' field does not exist")
             return http_error(500, "something went wrong")
     try:
-        if str(doc_entry["id"]) in db:
-            doc = db[str(doc_entry["id"])]
-            for key in doc_entry:
-                doc[key] = doc_entry[key]
-            doc.save()
-        else:
-            doc_entry["_id"] = str(doc_entry["id"])
-            doc = db.create_document(doc_entry)
-            if not doc.exists():
-                print(f"Failed to create a document given valid data {doc_entry}")
-                return http_error(500, "something went wrong")
+        doc = db.create_document(doc_entry)
+        if not doc.exists():
+            print(f"Failed to create a document given valid data {doc_entry}")
+            return http_error(500, "something went wrong")
+        print(f"new doc:{doc}")
     except CloudantException as ce:
         print(f"cloudant exception: {ce}")
         return http_error(500, "something went wrong")
     
-    return { "body": str(doc["id"]) }
+    return { "body": doc["_id"] }

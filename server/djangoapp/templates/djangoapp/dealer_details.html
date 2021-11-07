@@ -12,18 +12,20 @@
     {% if dealer %}
     <h1>Reviews for {{ dealer.full_name }}</h1>
     <hr>
+    <div class="card-columns">
         {% if reviews and reviews|length > 0 %}
             {% for review in reviews %}
-            <div class="container p-3 my-3 border text-white
-                {% if review.sentiment == 'positive' %}
-                    bg-success
-                {% elif review.sentiment == 'negative' %}
-                    bg-danger
-                {% else %}
-                    bg-secondary
-                {% endif %}
-                ">{{ review.name }} ({{ review.purchase_date }})
-                <hr>{{ review.review }}
+            <div class="card">
+                <div class="card-head">
+                    <img class="card-img-left" style="padding: 5px; width: 40px; height: 40px;" src="{{ MEDIA_URL }}/emoji/{{ review.sentiment }}.png">
+                </div>
+                <div class="card-body bg-light">
+                    <h4 class="card-title">{{ review.car_make }}, {{ review.car_model }}</h4>
+                    <h4 class="card-title">{{ review.car_year }}</h4>
+                    <p class="card-text">
+                        {{ review.name }}<br><br>{{ review.review }}
+                    </p>
+                </div>
             </div>
             {% endfor %}
         {% else %}
@@ -31,11 +33,13 @@
             No reviews.
         </div>
         {% endif %}
-        {% if user and user.is_authenticated %}
-        <div class="container justify-content-center p-3 my-3">
-            <button class="btn btn-primary" type="button" onClick="javascript:location.href=' {% url 'djangoapp:add_review' dealer.id %} ';">Add Review</button>
-        </div>
-        {% endif %}
+    </div>
+    {% if user and user.is_authenticated %}
+    <div class="container justify-content-center p-3 my-3">
+        {% url 'djangoapp:add_review' dealer.id as add_review_url %}
+        <button class="btn btn-primary" type="button" onClick="javascript:location.href='{{ add_review_url }}';">Add Review</button>
+    </div>
+    {% endif %}
     {% else %}
     <div class="container justify-content-center p-3 my-3">
         No dealer specified.

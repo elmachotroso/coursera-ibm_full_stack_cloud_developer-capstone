@@ -119,11 +119,12 @@ def add_review_to_cf(json_payload):
     results = []
     url = "https://9cecc68d.us-south.apigw.appdomain.cloud/api/review"
     json_result = post_request(url, json_payload=json_payload)
-    if json_result:
+    print(f"json_result={json_result}")
+    if json_result and "body" in json_result:
         reviewId = json_result["body"]
         print(f"reviewId={reviewId}")
         results.append({
-            "reviewId" : int(reviewId)
+            "reviewId" : reviewId
             })
     return results
 

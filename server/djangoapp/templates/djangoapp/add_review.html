@@ -13,14 +13,36 @@
 <body>
 {% include "djangoapp/sub_header.html" %}
 <div class="container p-3 my-3">
-    <h1>Review Dealer: {{ dealer.short_name }}</h1>
+    <h1>Add a Review About {{ dealer.full_name }}</h1>
     <hr>
     {% if user and user.is_authenticated %}
-    Form for review:
+    <form method="post" action="{% url 'djangoapp:add_review' dealer.id %}">
+        {% csrf_token %}
+        <b>Enter the review content:</b><br>
+        <textarea class="form-control" id="review" name="review" rows="2" required>This is a great car dealer. I had a pleasant experience with them!</textarea><br>
+        <input class="form-input-check" type="checkbox" id="purchase" name="purchase"> Has purchased the car from {{ dealer.full_name }}? <span class="text-secondary">(select purchased car information below if checked)</span><br>
+        <b>Select your car (model-make-year): </b>
+        <select name="car" id="car" class="form-select" required>
+            {% for car in cars %}
+                {% if car %}
+                    <option selected value="{{ car.id }}">{{ car.label }}</option>
+                {% endif %}
+            {% endfor %}
+        </select><br><br>
+        <b>Select your purchase date:</b><br>
+        <input class="date-own form-control" style="width: 250px;" type="text" id="purchase_date" name="purchase_date"><br>
+        <input type="hidden" id="name" name="name" value="{{ user.full_name }}">
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
     {% else %}
     You must log in to make a review!
     {% endif%}
 </div>
 {% include 'djangoapp/sub_footer.html' %}
 </body>
+<script type="text/javascript">
+    $('.date-own').datepicker({
+        format: 'mm/dd/yyyy'
+    });
+</script>
 </html>

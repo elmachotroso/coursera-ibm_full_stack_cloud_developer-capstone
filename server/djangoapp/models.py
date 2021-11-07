@@ -25,7 +25,7 @@ class CarModel(models.Model):
     type = models.CharField(max_length=128, choices=TYPE_CHOICES, default=TYPE_SEDAN)
     year = models.DateField()
     def __str__(self):
-        return f"makeId={self.makeId} name={self.name} dealerId={self.dealerId} type={self.type} year={self.year}"
+        return f"dealerId={self.dealerId} name={self.name} type={self.type} year={self.year}"
 
 class CarDealer:
     def __init__(self, address, city, full_name, id, lat, long, short_name, st, zip):
@@ -56,7 +56,7 @@ class CarDealer:
 
 
 class DealerReview:
-    def __init__(self, dealership, name, purchase, review, purchase_date, car_make, car_model, car_year, sentiment, id):
+    def __init__(self, dealership, name, purchase, review, purchase_date, car_make, car_model, car_year, sentiment):
         self.dealership = dealership
         self.name = name
         self.purchase = purchase
@@ -66,7 +66,6 @@ class DealerReview:
         self.car_model = car_model
         self.car_year = car_year
         self.sentiment = sentiment
-        self.id = id
 
     def __str__(self):
         return f"Name = {self.name}"
@@ -81,5 +80,4 @@ class DealerReview:
             , car_make=dealer_review_json['car_make']
             , car_model=dealer_review_json['car_model']
             , car_year=dealer_review_json['car_year']
-            , sentiment=dealer_review_json['sentiment']
-            , id=dealer_review_json['id'])
+            , sentiment=dealer_review_json['sentiment'])
