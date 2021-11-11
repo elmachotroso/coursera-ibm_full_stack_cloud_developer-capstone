@@ -21,8 +21,8 @@ def http_error(status_code, message):
         }
 
 def main(dict):
-    COUCH_USERNAME = "0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix"
-    IAM_API_KEY = "P4ML4YSIiBDR3uJoMw_7ymwT_XUSFI5Ikyd_W4fKr52-"
+    COUCH_USERNAME = ""
+    IAM_API_KEY = ""
     databaseName = "reviews"
 
     try:

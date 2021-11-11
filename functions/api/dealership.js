@@ -1,6 +1,6 @@
 const Cloudant = require('@cloudant/cloudant');
-const COUCH_URL = "https://0886bfd5-cf1b-4e75-b0bb-e21190990f4f-bluemix.cloudantnosqldb.appdomain.cloud";
-const IAM_API_KEY = "P4ML4YSIiBDR3uJoMw_7ymwT_XUSFI5Ikyd_W4fKr52-";
+const COUCH_URL = "";
+const IAM_API_KEY = "";
 
 function http_error( statusCode, message )
 {
